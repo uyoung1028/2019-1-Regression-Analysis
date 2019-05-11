@@ -1,0 +1,162 @@
+---
+title: "HW5_regression"
+output: html_document
+---
+##### 192STG15 조유영
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "/Users/uyoung/Documents/Ewha/Graduate/data")
+```
+
+### #7.2
+```{r}
+rocket <- read.csv('data-prob-7-2.csv')
+rocket
+```
+
+#### a)
+```{r}
+fit.rocket <- lm(y~x+I(x^2), data=rocket)
+summary(fit.rocket)
+```
+
+=> yhat = 1.633 -1.232\*x + 1.494\*x^2
+
+#### b)
+
+=> a)의 결과에서 F-statistic의 p-value < 0.05 이므로 유의수준 0.05 하에서 회귀직선이 유의하다.
+
+#### c)
+```{r}
+ifelse(summary(fit.rocket)$coef[3,4]<0.05,"reject","do not reject")
+```
+
+=> beta2의 p-value < 0.05 이므로 유의수준 0.05 하에서 H0를 기각한다. x가 있는 모형에서 x^2이 추가설명력을 지난다고 말할 수 있다.  
+
+<!-- FM: Ey = beta0 + beta1\*x + beta2\*x^2<br /> -->
+<!-- RM: Ey = beta0 + beta1\*x<br /> -->
+<!-- => SSR(beta2|beta1,beta0) = SSR(FM) - SSR(RM) -->
+<!-- F0 = SSR(beta2|beta1,beta0)/MSE -->
+
+#### d)
+
+=> b),c)의 결과에 의해 모형에 quadratic term을 넣기로 결정하였다. quadratic term을 넣을 경우 extrapolating의 가능성이 매우 높아지게 되므로 potential harards in extrapolating이 있다고 말할 수 있다.
+
+### #7.6
+```{r}
+beverage <- read.csv('data-prob-7-6.csv')
+beverage
+```
+
+#### a)
+```{r}
+fit.beverage <- lm(y~x1+x2+I(x1^2)+I(x2^2)+x1*x2, data=beverage)
+summary(fit.beverage)
+```
+
+=> yhat = 3025.32 - 194.27\*x1 - 6.05\*x2 + 3.63\*x1^2 + 1.15\*x2^2 - 1.33\*x1*x2
+
+#### b)
+
+=> a)의 결과에서 F-statistic의 p-value < 0.05 이므로 유의수준 0.05 하에서 회귀직선이 유의하다.
+
+#### c)
+```{r}
+library(alr3)
+pureErrorAnova(fit.beverage)
+```
+ 
+=> LOF의 p-value > 0.05이므로 Lack of Fit이 발생했다고 보기 어렵다.
+
+#### d)
+```{r}
+ifelse(summary(fit.beverage)$coef[6,4]<0.05, "reject", "do not reject")
+```
+
+=> 교호작용항의 p-value > 0.05 이므로 유의수준 0.05하에서 귀무가설을 기각할 수 없다. 즉, 교호작용항은 유의하지 않다고 말할 수 있다.
+
+#### e)
+```{r}
+# x1^2
+ifelse(summary(fit.beverage)$coef[4,4]<0.05, "reject", "do not reject")
+```
+
+=> x1^2의 p-value > 0.05 이므로 유의수준 0.05하에서 귀무가설을 기각할 수 없다. 즉, x1^2은 유의하지 않다고 말할 수 있다.
+
+```{r}
+# x2^2
+ifelse(summary(fit.beverage)$coef[5,4]<0.05, "reject", "do not reject")
+```
+
+=> x2^2의 p-value < 0.05 이므로 유의수준 0.05하에서 귀무가설을 기각한다. 즉, x2^2은 유의하다고 말할 수 있다.
+
+### #7.7
+```{r}
+res <- resid(fit.beverage)
+res
+par(mfrow=c(2,2))
+plot(fit.beverage)
+par(mfrow=c(1,1))
+
+```
+
+=> Normal Q-Q plot과 residual graph 상으로는 정규성 가정을 만족하고 잔차들이 수평밴드 내에서 랜덤하게 분포하고 있어보인다.  
+Cook's distance 그래프 상에서 7번째 자료점이 영향력이 있어보인다.
+
+
+### #7.8
+#### a)
+```{r}
+attach(rocket)
+#(x - mean(x))/0.25
+lambda1 <- 2
+P1 <- (x - mean(x))/0.25*lambda1
+
+#((x - mean(x))/0.25)^2-99/12
+lambda2 <- 1/2
+P2 <- (((x - mean(x))/0.25)^2-99/12)*lambda2
+
+fit.rocket.ortho <- lm(y~P1+P2, data=rocket)
+summary(fit.rocket.ortho)
+
+detach(rocket)
+```
+
+=> yhat = 3.535 + 0.3597\*P1(x) + 0.1868\*P2(x)
+
+#### b)
+```{r}
+fit.rocket.cubic <- lm(y~x+I(x^2)+I(x^3),data=rocket)
+summary(fit.rocket.cubic)
+```
+
+=> x^3 회귀계수의 p-value > 0.05이므로 유의수준 0.05 하에서 x^3 항이 유의하지 않음을 알 수 있다.
+
+### #7.16
+#### a)
+```{r}
+summary(fit.rocket)
+
+library(car)
+vif(fit.rocket)
+```
+
+=> vif >= 10 이므로 multicollinearity 문제가 있다고 할 수 있다.
+
+
+#### b)
+```{r}
+attach(rocket)
+x.centered <- x-mean(x)
+fit.rocket.centered <- lm(y~x.centered+I(x.centered^2), data=rocket)
+vif(fit.rocket.centered)
+detach(rocket)
+
+```
+
+=> vif < 10 이므로 multicollinearity 문제가 없다고 할 수 있다.
+
+#### c)
+
+=> centering 시키기 전에 비해 후의 vif 값이 현저 줄었으므로, centering 시키는 것이 multicollinerity를 해결할 수 있는 방법 중 하나임을 알 수 있다.
+
