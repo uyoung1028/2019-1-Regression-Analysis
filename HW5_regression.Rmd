@@ -32,10 +32,6 @@ ifelse(summary(fit.rocket)$coef[3,4]<0.05,"reject","do not reject")
 
 => beta2의 p-value < 0.05 이므로 유의수준 0.05 하에서 H0를 기각한다. x가 있는 모형에서 x^2이 추가설명력을 지난다고 말할 수 있다.  
 
-<!-- FM: Ey = beta0 + beta1\*x + beta2\*x^2<br /> -->
-<!-- RM: Ey = beta0 + beta1\*x<br /> -->
-<!-- => SSR(beta2|beta1,beta0) = SSR(FM) - SSR(RM) -->
-<!-- F0 = SSR(beta2|beta1,beta0)/MSE -->
 
 #### d)
 
