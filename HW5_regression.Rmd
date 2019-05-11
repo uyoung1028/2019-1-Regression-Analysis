@@ -2,7 +2,6 @@
 title: "HW5_regression"
 output: html_document
 ---
-##### 192STG15 조유영
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "/Users/uyoung/Documents/Ewha/Graduate/data")
